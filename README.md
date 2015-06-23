@@ -18,7 +18,7 @@ Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input fol
 	CREATE KEYSPACE keyspace-name WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 ```
 
-*   create table 
+*   create users table 
 
 ```
 	USE keyspace-name;

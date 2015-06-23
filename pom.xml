@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>it.paolorendano</groupId>
+	<artifactId>cassandra-login-module</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Cassandra JAAS Login Module</name>
+	<developers>
+		<developer>
+			Paolo Rendano
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<jvm-version>1.7</jvm-version>
+		<spring-version>4.1.1.RELEASE</spring-version>
+		<spring-integration-version>4.1.0.RELEASE</spring-integration-version>
+		<activemq-version>5.11.0</activemq-version>
+		<cassandra-driver-version>2.1.6</cassandra-driver-version>
+	</properties>
+
+	<build>
+
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<inherited>true</inherited>
+				<configuration>
+					<source>${jvm-version}</source>
+					<target>${jvm-version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- SPRING FRAMEWORK DEPS -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+
+		<!-- ACTIVEMQ -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-jaas</artifactId>
+			<version>${activemq-version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>${activemq-version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- CASSANDRA DEPS -->
+		<dependency>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>${cassandra-driver-version}</version>
+			<classifier>shaded</classifier>
+			<!-- Because the shaded JAR uses the original POM, you still need to exclude 
+				this dependency explicitly: -->
+			<exclusions>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- LOG DEPS -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.10</version>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+</project>

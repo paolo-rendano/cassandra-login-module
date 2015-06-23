@@ -51,7 +51,7 @@ You can easily hash password with java function:
 
 ##Example 1 - Install in ActiveMQ
 
-*   put artifact jar (cassandra-login-module.jar) into $ACTIVEMQ_HOME/lib
+*   put artifact jar (cassandra-login-module-x.y.z.jar) into $ACTIVEMQ_HOME/lib
 *   add following block into $ACTIVEMQ_HOME/conf/login.config
 
 ```

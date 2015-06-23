@@ -6,7 +6,9 @@
 	<artifactId>cassandra-login-module</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>Cassandra JAAS Login Module</name>
+	<name>${project.groupId}:${project.artifactId}</name>
+
+	<description>A JAAS login module to implement authentication with Apache Cassandra</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,8 +21,6 @@
 	</properties>
 
 	<build>
-
-		<finalName>${project.artifactId}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -92,18 +92,34 @@
 			<version>1.7.10</version>
 			<type>jar</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
 			<type>jar</type>
 		</dependency>
-		
+
 	</dependencies>
 	<url>https://github.com/paolo-rendano/cassandra-login-module</url>
 	<organization>
 		<name>Paolo Rendano</name>
 		<url>www.paolorendano.it</url>
 	</organization>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Paolo Rendano</name>
+			<email>info@paolorendano.it</email>
+			<organization>Paolo Rendano</organization>
+			<organizationUrl>http://www.paolorendano.it</organizationUrl>
+		</developer>
+	</developers>
 </project>

@@ -3,14 +3,13 @@ A JAAS login module to implement authentication with Apache Cassandra
 
 #Getting started
 
-
 ##Compile Jar
 Prerequisites: JDK 1.7 and Apache Maven 3.x properly installed
 
 1. download sources from git and explode them
 2. go in project home and type: mvn clean package
 
-##Cassandra keyspace initialize
+##Cassandra keyspace initialization
 Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input following commands.
 
 *   create keyspace (according to your architectural decisions)
@@ -36,7 +35,9 @@ Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input fol
 
 *   insert example user (dynablaster/password)
 
-	INSERT INTO users VALUES('dynablaster', 'Paolo', 'Rendano', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
+```
+	INSERT INTO users VALUES('dynablaster76', 'Paolo', 'Rendano', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
+```
 
 ###Note  
 You can easily hash password with java function:

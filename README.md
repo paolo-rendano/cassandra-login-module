@@ -1,7 +1,7 @@
 # cassandra-login-module
 A JAAS login module to implement authentication with Apache Cassandra
 
-*Perfectly fit with Apache Active*
+*Perfectly fits with Apache ActiveMQ*
 
 #Features
 

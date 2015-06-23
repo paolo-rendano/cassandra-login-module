@@ -46,6 +46,8 @@ public abstract class AbstractCassandraDAO {
 
     /** The contact point. */
     @Value("${cassandra.contactPoints}") private String contactPointList;
+    
+    /** The contact points. */
     private List<String> contactPoints;
     
     /** The keyspace. */

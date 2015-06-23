@@ -73,6 +73,13 @@ You can easily hash password with java function:
 	</bean>
 	
 	<import resource="classpath*:/cassandra-jaas-config.xml" />
+	
+	<broker>
+		<plugins>
+			<jaasAuthenticationPlugin configuration="activemq-cassandra" />
+		</plugins>
+	</broker>
+	
 ```
 
 *   create and properly configure $ACTIVEMQ_HOME/conf/cassandra.properties

@@ -19,31 +19,36 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
 
 /**
  * The Class Utils.
  */
 public class Utils {
+	/** The Constant LOGGER. */
+	protected static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 	
 	/**
 	 * Hash password.
 	 *
 	 * @param password the password
 	 * @return the string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
 	 */
-	public static String hashPassword(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-		MessageDigest mdigest = MessageDigest.getInstance("SHA-256");
-		mdigest.update(password.getBytes("UTF-8"));
-		
-		return Base64Utils.encodeToString(mdigest.digest());
+	public static String hashPassword(String password) {
+		MessageDigest mdigest;
+		try {
+			mdigest = MessageDigest.getInstance("SHA-256");
+			mdigest.update(password.getBytes("UTF-8"));
+			return Base64Utils.encodeToString(mdigest.digest());
+		} catch (NoSuchAlgorithmException e) {
+			if (LOGGER.isErrorEnabled())
+				LOGGER.error(e.getMessage(),e);
+		} catch (UnsupportedEncodingException e) {
+			if (LOGGER.isErrorEnabled())
+				LOGGER.error(e.getMessage(),e);
+		}
+		return null;
 	}
-	
-	public static void main(String[] args) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-		System.out.println(Utils.hashPassword("password"));
-	}
-
-
 }

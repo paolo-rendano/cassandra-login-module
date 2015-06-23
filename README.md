@@ -54,7 +54,7 @@ You can easily hash password with java function:
 	String password = "password";
 	MessageDigest mdigest = MessageDigest.getInstance("SHA-256");
 	mdigest.update(password.getBytes("UTF-8"));
-	String hashed = Base64Utils.encodeToString(mdigest.digest());
+	String hashed = Base64.encodeBase64String(mdigest.digest());
 ```
 
 ##Example 1 - Install in ActiveMQ

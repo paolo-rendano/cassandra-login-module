@@ -1,6 +1,14 @@
 # cassandra-login-module
 A JAAS login module to implement authentication with Apache Cassandra
 
+#Features
+
+1. Username and password authentication based on an external cassandra datasource
+2. Password is stored obscured with one-way hash SHA-256 function
+3. External configuration point
+4. (TO-DO) Optional authentication with cassandra database
+5. (TO-DO) Optional SSL communication between driver and database
+
 #Getting started
 
 ##Compile Jar
@@ -33,10 +41,10 @@ Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input fol
 	PRIMARY KEY (uname));
 ```
 
-*   insert example user (dynablaster/password)
+*   insert example user (dduck/password)
 
 ```
-	INSERT INTO users (uname, fname, lname, pwd) VALUES ( 'dynablaster76', 'Paolo', 'Rendano', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
+	INSERT INTO users (uname, fname, lname, pwd) VALUES ( 'dduck', 'Donald', 'Duck', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
 ```
 
 ###Note  
@@ -55,9 +63,9 @@ You can easily hash password with java function:
 *   put external dependencies into $ACTIVEMQ_HOME/lib:
   - cassandra-driver-core-2.1.x-shaded.jar
   - guava-14.0.1.jar
-  - slf4j-api-1.7.10.jar
   - metrics-core-3.0.2.jar
   - hawtbuf-1.11.jar
+  - slf4j-api-1.7.10.jar
 
 
 *   add following block into $ACTIVEMQ_HOME/conf/login.config

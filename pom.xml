@@ -97,5 +97,18 @@
 			<version>1.7.10</version>
 			<type>jar</type>
 		</dependency>
+		
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+			<type>jar</type>
+		</dependency>
+		
 	</dependencies>
+	<url>https://github.com/paolo-rendano/cassandra-login-module</url>
+	<organization>
+		<name>Paolo Rendano</name>
+		<url>www.paolorendano.it</url>
+	</organization>
 </project>

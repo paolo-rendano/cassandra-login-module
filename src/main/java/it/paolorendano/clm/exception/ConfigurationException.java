@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package it.paolorendano.clm.service.repository.api.exception;
+package it.paolorendano.clm.exception;
 
 /**
  * The Class ConfigurationException.

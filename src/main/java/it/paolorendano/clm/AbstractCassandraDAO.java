@@ -15,7 +15,7 @@
 */
 package it.paolorendano.clm;
 
-import it.paolorendano.clm.service.repository.api.exception.ConfigurationException;
+import it.paolorendano.clm.exception.ConfigurationException;
 
 import java.util.Arrays;
 import java.util.List;

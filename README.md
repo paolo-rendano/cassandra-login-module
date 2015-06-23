@@ -106,7 +106,7 @@ cassandra.properties layout:
 - cassandra.contactPoints: a comma separated list of contact points
 - cassandra.keyspace: the name of the keyspace to connect to
 - cassandra.useSSL: for future use
-- cassandra.authentication=false
-- cassandra.username=
-- cassandra.password=
+- cassandra.authentication: for future use
+- cassandra.username: for future use
+- cassandra.password: for future use
 

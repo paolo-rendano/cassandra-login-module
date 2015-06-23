@@ -47,21 +47,21 @@ You can easily hash password with java function:
 *   add following block into $ACTIVEMQ_HOME/conf/login.config
 
 	activemq-cassandra {
-    it.paolorendano.cml.CassandraLoginModule required;
-    };
+    		it.paolorendano.cml.CassandraLoginModule required;
+	};
 
 *   merge following block within $ACTIVEMQ_HOME/conf/activemq.xml
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-		<list>
-			...
-            <value>file:${activemq.conf}/cassandra.properties</value>
-		</list>
-        </property>
-    </bean>
-    
-    <import resource="classpath*:/cassandra-jaas-config.xml" />
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				...
+				<value>file:${activemq.conf}/cassandra.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<import resource="classpath*:/cassandra-jaas-config.xml" />
 
 *   create and properly configure $ACTIVEMQ_HOME/conf/cassandra.properties
 

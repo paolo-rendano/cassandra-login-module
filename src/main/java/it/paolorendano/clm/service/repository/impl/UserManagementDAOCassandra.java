@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package it.paolorendano.clm.service.repository.api.impl;
+package it.paolorendano.clm.service.repository.impl;
 
 import it.paolorendano.clm.AbstractCassandraDAO;
 import it.paolorendano.clm.Constants;

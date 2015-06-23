@@ -36,7 +36,7 @@ Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input fol
 *   insert example user (dynablaster/password)
 
 ```
-	INSERT INTO users VALUES('dynablaster76', 'Paolo', 'Rendano', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
+	INSERT INTO users (uname, fname, lname, pwd) VALUES ( 'dynablaster76', 'Paolo', 'Rendano', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
 ```
 
 ###Note  
@@ -95,10 +95,18 @@ You can easily hash password with java function:
 cassandra.properties layout:
 
 ```
-	cassandra.contactPoint=ec2-x-y-z-w.eu-central-1.compute.amazonaws.com
+	cassandra.contactPoints=ec2-x-y-z-w.eu-central-1.compute.amazonaws.com
 	cassandra.keyspace=keyspace-name
 	cassandra.useSSL=false
 	cassandra.authentication=false
 	cassandra.username=
 	cassandra.password=
 ```
+
+- cassandra.contactPoints: a comma separated list of contact points
+- cassandra.keyspace: the name of the keyspace to connect to
+- cassandra.useSSL: for future use
+- cassandra.authentication=false
+- cassandra.username=
+- cassandra.password=
+

@@ -111,6 +111,9 @@ public class CassandraLoginModule implements LoginModule {
 					if (result) {
 						this.user = userName;
 						this.loginSucceeded = true;
+					} else {
+						if (LOGGER.isInfoEnabled())
+							LOGGER.info("[" + user + "] access denied");
 					}
 				} catch (IOException | UnsupportedCallbackException e) {
 					if (LOGGER.isErrorEnabled())
@@ -134,7 +137,7 @@ public class CassandraLoginModule implements LoginModule {
 				subject.getPrincipals().add(new UserPrincipal(user));
 				subject.getPrincipals().add(new GroupPrincipal("USR_" + user));
 				if (LOGGER.isInfoEnabled())
-					LOGGER.info("Authenticated as: [" + user + "]");
+					LOGGER.info("[" + user + "] has logged in successfully");
 			}
 			clear();
 			return result;

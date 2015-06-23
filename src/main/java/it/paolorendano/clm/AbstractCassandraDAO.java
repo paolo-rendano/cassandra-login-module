@@ -15,6 +15,11 @@
 */
 package it.paolorendano.clm;
 
+import it.paolorendano.clm.service.repository.api.exception.ConfigurationException;
+
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -40,7 +45,8 @@ public abstract class AbstractCassandraDAO {
     protected Cluster cluster;
 
     /** The contact point. */
-    @Value("${cassandra.contactPoint}") private String contactPoint;
+    @Value("${cassandra.contactPoints}") private String contactPointList;
+    private List<String> contactPoints;
     
     /** The keyspace. */
     @Value("${cassandra.keyspace}") private String keyspace;
@@ -63,12 +69,29 @@ public abstract class AbstractCassandraDAO {
 	@PostConstruct
 	public void init() {
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("Init with Cassandra ContactPoint:" + contactPoint);
+			LOGGER.info("Init with Cassandra ContactPoints:");
 		}
-		this.cluster = Cluster.builder()
-				.addContactPoint(contactPoint)
-                .build();
-		this.session = cluster.connect(keyspace);
+		contactPoints = Arrays.asList(contactPointList.trim().split(","));
+		
+		if (contactPoints!=null) {
+			Cluster.Builder builder = Cluster.builder();
+			
+			for (String contactPoint:contactPoints) {
+				String contactPointTrimmed = contactPoint.trim();
+				if (!"".equals(contactPointTrimmed)) {
+					if (LOGGER.isInfoEnabled()) {
+						LOGGER.info(" -> [" + contactPoint.trim() + "]");
+					}
+					builder.addContactPoint(contactPoint.trim());
+				}
+			}
+			if (builder.getContactPoints().size()>0) {
+				this.cluster = builder.build();
+				this.session = cluster.connect(keyspace);
+			} else {
+				throw new ConfigurationException("No valid contact point found in cassandra.properties. Please check configuration.");
+			}
+		}
 	}
 
 	/**

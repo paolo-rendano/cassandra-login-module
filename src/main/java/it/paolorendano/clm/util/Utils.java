@@ -19,9 +19,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Base64Utils;
 
 /**
  * The Class Utils.
@@ -41,7 +41,7 @@ public class Utils {
 		try {
 			mdigest = MessageDigest.getInstance("SHA-256");
 			mdigest.update(password.getBytes("UTF-8"));
-			return Base64Utils.encodeToString(mdigest.digest());
+			return Base64.encodeBase64String(mdigest.digest());
 		} catch (NoSuchAlgorithmException e) {
 			if (LOGGER.isErrorEnabled())
 				LOGGER.error(e.getMessage(),e);

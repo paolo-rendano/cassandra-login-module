@@ -11,7 +11,7 @@ A JAAS login module to implement authentication with Apache Cassandra
 4. [ ] Optional authentication with cassandra database
 5. [ ] Optional SSL communication between driver and database
 6. [X] User groups association on datasource
-7. [/] API to manage users and groups
+7. [ ] API to manage users and groups (in progress...)
  
 #Getting started
 

@@ -10,8 +10,9 @@ A JAAS login module to implement authentication with Apache Cassandra
 3. [X] External configuration point
 4. [ ] Optional authentication with cassandra database
 5. [ ] Optional SSL communication between driver and database
-6. [ ] User groups association on datasource
-
+6. [X] User groups association on datasource
+7. [/] API to manage users and groups
+ 
 #Getting started
 
 ##Compile Jar
@@ -44,11 +45,28 @@ Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input fol
 	PRIMARY KEY (uname));
 ```
 
-*   insert example user (dduck/password)
+*   create groups table
+
+```
+	CREATE TABLE groups (
+		uname varchar,
+		gname varchar,
+	PRIMARY KEY(uname, gname));
+```
+
+
+*   insert example user (user: dduck password: password)
 
 ```
 	INSERT INTO users (uname, fname, lname, pwd) VALUES ( 'dduck', 'Donald', 'Duck', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
 ```
+
+*   insert example group (user: dduck group: ducks)
+
+```
+	INSERT INTO groups (uname, gname) VALUES ( 'dduck', 'ducks');
+```
+
 
 ###Note  
 You can easily hash password with java function:

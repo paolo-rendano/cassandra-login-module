@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package it.paolorendano.clm.service.repository.api;
+package it.paolorendano.clm.service.application.api;
 
 import it.paolorendano.clm.model.Group;
 import it.paolorendano.clm.model.User;
@@ -21,18 +21,10 @@ import it.paolorendano.clm.model.User;
 import java.util.List;
 
 /**
- * The Interface UserManagementDAO.
+ * The Interface UserManagementService.
  */
-public interface UserManagementDAO {
-
-	/**
-	 * Load user by user name.
-	 *
-	 * @param userName the user name
-	 * @return the user
-	 */
-	User loadUserByUserName(String userName);
-
+public interface UserManagementService {
+	
 	/**
 	 * Creates the user.
 	 *
@@ -41,14 +33,29 @@ public interface UserManagementDAO {
 	void createUser(User user);
 	
 	/**
-	 * Change password.
+	 * Change user password.
 	 *
 	 * @param userName the user name
 	 * @param password the password
 	 * @param newPassword the new password
 	 */
-	void changePassword(String userName, String password, String newPassword);
+	void changeUserPassword(String userName, String password,
+			String newPassword);
 
+	/**
+	 * Removes the user.
+	 *
+	 * @param userName the user name
+	 */
+	void removeUser(String userName);
+
+	/**
+	 * Gets the users.
+	 *
+	 * @return the users
+	 */
+	List<User> getUsers();
+	
 	/**
 	 * Gets the user groups.
 	 *
@@ -56,8 +63,7 @@ public interface UserManagementDAO {
 	 * @return the user groups
 	 */
 	List<Group> getUserGroups(String userName);
-	
-	
+
 	/**
 	 * Insert user in group.
 	 *
@@ -65,7 +71,7 @@ public interface UserManagementDAO {
 	 * @param groupName the group name
 	 */
 	void insertUserInGroup(String userName, String groupName);
-	
+
 	/**
 	 * Removes the user from group.
 	 *
@@ -73,4 +79,5 @@ public interface UserManagementDAO {
 	 * @param groupName the group name
 	 */
 	void removeUserFromGroup(String userName, String groupName);
+
 }

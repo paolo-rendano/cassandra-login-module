@@ -17,10 +17,12 @@ package it.paolorendano.clm.service.repository.impl;
 
 import it.paolorendano.clm.AbstractCassandraDAO;
 import it.paolorendano.clm.Constants;
+import it.paolorendano.clm.model.Group;
 import it.paolorendano.clm.model.User;
 import it.paolorendano.clm.service.repository.api.UserManagementDAO;
 import it.paolorendano.clm.util.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -44,24 +46,9 @@ public class UserManagementDAOCassandra extends AbstractCassandraDAO implements 
 	 */
 	@Override
 	public void createUser(User user) {
-		if (user == null)
-			return;
-		if (user.getUserName()==null || "".equals(user.getUserName()) || user.getUserName().length()>Constants.USERNAME_MAX_LENGTH) {
-			return;
-		}
-		if (user.getPassword()==null || "".equals(user.getPassword()) || user.getPassword().length()>Constants.PASSWORD_MAX_LENGTH) {
-			return;
-		}
-		if (user.getFirstName()==null || "".equals(user.getFirstName()) || user.getFirstName().length()>Constants.FIRSTNAME_MAX_LENGTH) {
-			return;
-		}
-		if (user.getLastName()==null || "".equals(user.getLastName()) || user.getLastName().length()>Constants.LASTNAME_MAX_LENGTH) {
-			return;
-		}
-
 		String hashedPassword = Utils.hashPassword(user.getPassword());
 		if (hashedPassword==null) {
-			return;
+			throw new IllegalStateException("hash password cannot be calculated");
 		}
 			
 		session.execute(
@@ -93,18 +80,69 @@ public class UserManagementDAOCassandra extends AbstractCassandraDAO implements 
 		ResultSet result = session.execute(query, userName);
 		List<Row> rows = result.all();
 		if (rows.size()>0)
-			user = convert(rows.get(0));
+			user = convertUser(rows.get(0));
 		return user;
 	}
 	
 	/**
-	 * Convert.
+	 * Convert the User.
 	 *
 	 * @param row the row
 	 * @return the user
 	 */
-	private User convert(Row row) {
+	private User convertUser(Row row) {
 		User u = new User(row.getString("uname"),row.getString("fname"),row.getString("lname"), row.getString("pwd"));
 		return u;
 	}
+
+	/**
+	 * Convert group.
+	 *
+	 * @param row the row
+	 * @return the group
+	 */
+	private Group convertGroup(Row row) {
+		Group g = new Group(row.getString("uname"),row.getString("gname"));
+		return g;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.paolorendano.clm.service.repository.api.UserManagementDAO#getUserGroups(java.lang.String)
+	 */
+	@Override
+	public List<Group> getUserGroups(String userName) {
+		List<Group> groups = new ArrayList<Group>();
+		
+		String query = "SELECT * from groups where uname = ?";
+		ResultSet result = session.execute(query, userName);
+		List<Row> rows = result.all();
+		for (Row row:rows) {
+			Group g = convertGroup(row);
+			groups.add(g);
+		}
+		return groups;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.paolorendano.clm.service.repository.api.UserManagementDAO#insertUserInGroup(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void insertUserInGroup(String userName, String groupName) {
+		session.execute(
+				"INSERT INTO groups (uname, fname) values (?, ?)", 
+				userName, 
+				groupName);
+	}
+	
+	/* (non-Javadoc)
+	 * @see it.paolorendano.clm.service.repository.api.UserManagementDAO#removeUserFromGroup(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void removeUserFromGroup(String userName, String groupName) {
+		session.execute(
+				"DELETE FROM groups WHERE uname=? and gname=?", 
+				userName, 
+				groupName);
+	}
+
 }

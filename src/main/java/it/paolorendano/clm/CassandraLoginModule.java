@@ -15,9 +15,12 @@
 */
 package it.paolorendano.clm;
 
+import it.paolorendano.clm.model.Group;
 import it.paolorendano.clm.service.application.api.AuthenticationService;
+import it.paolorendano.clm.service.application.api.UserManagementService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -61,6 +64,9 @@ public class CassandraLoginModule implements LoginModule {
 		/** The user. */
 		private String user;
 		
+		/** The groups. */
+		private List<Group> groups;
+		
 		/* (non-Javadoc)
 		 * @see javax.security.auth.spi.LoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)
 		 */
@@ -75,6 +81,7 @@ public class CassandraLoginModule implements LoginModule {
 
 			this.loginSucceeded = false;
 			this.user = null;
+			this.groups = null;
 		}
 
 		/* (non-Javadoc)
@@ -84,19 +91,19 @@ public class CassandraLoginModule implements LoginModule {
 		public boolean login() throws LoginException {
 
 			if (callbackHandler == null) {
-				if (LOGGER.isErrorEnabled())
-					LOGGER.error("No callback available");
-				throw new LoginException("No callback available");
+				throw new IllegalStateException("No callback available");
 			}
 
 			ApplicationContext ctx = SpringContextHolder.getApplicationContext();
 			if (ctx!=null) {
 				AuthenticationService authenticationService = ctx.getBean(AuthenticationService.class);
-				
+				UserManagementService userManagementService = ctx.getBean(UserManagementService.class);
+
 				if (authenticationService==null) {
-					if (LOGGER.isErrorEnabled())
-						LOGGER.error("No auth service available");
-					throw new LoginException("No auth service available");
+					throw new IllegalStateException("No auth service available");
+				}
+				if (userManagementService==null) {
+					throw new IllegalStateException("No user management service available");
 				}
 
 				Callback[] callbacks = new Callback[2];
@@ -111,6 +118,7 @@ public class CassandraLoginModule implements LoginModule {
 					if (result) {
 						this.user = userName;
 						this.loginSucceeded = true;
+						this.groups = userManagementService.getUserGroups(userName);
 					} else {
 						if (LOGGER.isInfoEnabled())
 							LOGGER.info("[" + user + "] access denied");
@@ -120,9 +128,7 @@ public class CassandraLoginModule implements LoginModule {
 						LOGGER.error(e.getMessage(),e);
 				}
 			} else {
-				if (LOGGER.isErrorEnabled())
-					LOGGER.error("No spring context available");
-				throw new LoginException("No spring context available");
+				throw new IllegalStateException("No spring context available");
 			}
 			return this.loginSucceeded;
 		}
@@ -135,7 +141,9 @@ public class CassandraLoginModule implements LoginModule {
 			boolean result = loginSucceeded;
 			if (result) {
 				subject.getPrincipals().add(new UserPrincipal(user));
-				subject.getPrincipals().add(new GroupPrincipal("USR_" + user));
+				for (Group group:this.groups) {
+					subject.getPrincipals().add(new GroupPrincipal(group.getGroupName()));
+				}
 				if (LOGGER.isInfoEnabled())
 					LOGGER.info("[" + user + "] has logged in successfully");
 			}
@@ -168,6 +176,7 @@ public class CassandraLoginModule implements LoginModule {
 		private void clear() {
 			this.loginSucceeded = false;
 			this.user = null;
+			this.groups = null;
 		}
 		
 }

@@ -31,4 +31,6 @@ public class Constants {
 	/** The Constant LASTNAME_MAX_LENGTH. */
 	public static final Integer LASTNAME_MAX_LENGTH = 128;
 
+	/** The Constant GROUPNAME_MAX_LENGTH. */
+	public static final Integer GROUPNAME_MAX_LENGTH = 32;
 }

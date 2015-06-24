@@ -44,16 +44,16 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 	@Override
 	public Boolean authenticate(String userName, String password) {
 		if (userName==null || "".equals(userName.trim())) {
-			return false;
+			throw new IllegalArgumentException("username is not valid");
 		}
 		if (userName.length()>Constants.USERNAME_MAX_LENGTH) {
-			return false;
+			throw new IllegalArgumentException("username is too long");
 		}
 		if (password==null || "".equals(password)) {
-			return false;
+			throw new IllegalArgumentException("username is not valid");
 		}
 		if (password.length()>Constants.PASSWORD_MAX_LENGTH) {
-			return false;
+			throw new IllegalArgumentException("password is too long");
 		}
 		User user = userManagementDAO.loadUserByUserName(userName);
 		if (user==null) {
@@ -61,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		}
 		String hashed = Utils.hashPassword(password);
 		if (hashed==null) {
-			return false;
+			throw new IllegalStateException("hash password cannot be calculated");
 		}
 			
 		if (user.getPassword()!=null && hashed.equals(user.getPassword())) {

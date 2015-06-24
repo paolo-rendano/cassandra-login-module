@@ -15,18 +15,18 @@
 */
 package it.paolorendano.clm.service.application.impl;
 
+import it.paolorendano.clm.Constants;
+import it.paolorendano.clm.model.Group;
+import it.paolorendano.clm.model.User;
+import it.paolorendano.clm.service.application.api.UserManagementService;
+import it.paolorendano.clm.service.repository.api.UserManagementDAO;
+
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import it.paolorendano.clm.Constants;
-import it.paolorendano.clm.model.Group;
-import it.paolorendano.clm.model.User;
-import it.paolorendano.clm.service.application.api.UserManagementService;
-import it.paolorendano.clm.service.repository.api.UserManagementDAO;
 
 /**
  * The Class UserManagementServiceImpl.

@@ -16,7 +16,6 @@
 package it.paolorendano.clm.service.repository.impl;
 
 import it.paolorendano.clm.AbstractCassandraDAO;
-import it.paolorendano.clm.Constants;
 import it.paolorendano.clm.model.Group;
 import it.paolorendano.clm.model.User;
 import it.paolorendano.clm.service.repository.api.UserManagementDAO;

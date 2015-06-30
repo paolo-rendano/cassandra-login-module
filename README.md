@@ -9,7 +9,7 @@ A JAAS login module to implement authentication with Apache Cassandra
 2. [X] Password is stored obscured with one-way hash SHA-256 function
 3. [X] External configuration point
 4. [X] Optional authentication with cassandra database
-5. [ ] Optional SSL communication between driver and database
+5. [X] Optional SSL communication between driver and database
 6. [X] User groups association on datasource
 7. [ ] API to manage users and groups (in progress...)
  
@@ -121,20 +121,32 @@ You can easily hash password with java function:
 
 *   create and properly configure $ACTIVEMQ_HOME/conf/cassandra.properties
 
-cassandra.properties layout:
+cassandra.properties layout example:
 
 ```
-	cassandra.contactPoints=ec2-x-y-z-w.eu-central-1.compute.amazonaws.com
+	cassandra.contactPoints=ec2-x-y-z-w.eu-central-1.compute.amazonaws.com, ec2-x-y-z-w.eu-central-2.compute.amazonaws.com
 	cassandra.keyspace=keyspace-name
-	cassandra.useSSL=false
-	cassandra.authentication=false
-	cassandra.username=
-	cassandra.password=
+	cassandra.authentication=true
+	cassandra.username=cassandra
+	cassandra.password=cassandra
+	cassandra.useSSL=true
+	cassandra.truststorePath=${activemq.conf}/.truststore
+	cassandra.truststorePassword=<truststore password here>
+	cassandra.keystorePath=${activemq.conf}/.keystore
+	cassandra.keystorePassword=<keystore password here>
 ```
 
 - cassandra.contactPoints: a comma separated list of contact points
 - cassandra.keyspace: the name of the keyspace to connect to
-- cassandra.useSSL: for future use
-- cassandra.authentication: true if cassandra needs username/password authentication
+- cassandra.authentication: true if cassandra requires username/password authentication
 - cassandra.username: username to authentication against cassandra
 - cassandra.password: password to authentication against cassandra
+- cassandra.useSSL: true if cassandra requires client-to-node ssl encryption
+- cassandra.truststorePath: path to .truststore file
+- cassandra.truststorePassword: the password of truststore
+- cassandra.keystorePath: path to .keystore file
+- cassandra.keystorePassword: the password of keystore
+
+
+##Note - Enabling SSL client-to-node
+Please refer to official documentation at http://docs.datastax.com/en/cassandra/2.0/cassandra/security/secureSSLCertificates_t.html

@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package it.paolorendano.clm;
 
 import it.paolorendano.clm.exception.ConfigurationException;
@@ -34,37 +34,37 @@ import com.datastax.driver.core.Session;
  * The Class AbstractCassandraDAO.
  */
 public abstract class AbstractCassandraDAO {
-	
+
 	/** The Constant LOGGER. */
 	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractCassandraDAO.class);
 
-    /** The session. */
-    protected Session session;
-    
-    /** The cluster. */
-    protected Cluster cluster;
+	/** The session. */
+	protected Session session;
 
-    /** The contact point. */
-    @Value("${cassandra.contactPoints}") private String contactPointList;
-    
-    /** The contact points. */
-    private List<String> contactPoints;
-    
-    /** The keyspace. */
-    @Value("${cassandra.keyspace}") private String keyspace;
-    
-    /** The use ssl. */
-    @Value("${cassandra.useSSL}") private Boolean useSSL;
-    
-    /** The authentication. */
-    @Value("${cassandra.authentication}") private Boolean authentication;
-    
-    /** The username. */
-    @Value("${cassandra.username}") private String username;
-    
-    /** The password. */
-    @Value("${cassandra.password}") private String password;
-    
+	/** The cluster. */
+	protected Cluster cluster;
+
+	/** The contact point. */
+	@Value("${cassandra.contactPoints}") private String contactPointList;
+
+	/** The contact points. */
+	private List<String> contactPoints;
+
+	/** The keyspace. */
+	@Value("${cassandra.keyspace}") private String keyspace;
+
+	/** The use ssl. */
+	@Value("${cassandra.useSSL}") private Boolean useSSL;
+
+	/** The authentication. */
+	@Value("${cassandra.authentication}") private Boolean authentication;
+
+	/** The username. */
+	@Value("${cassandra.username}") private String username;
+
+	/** The password. */
+	@Value("${cassandra.password}") private String password;
+
 	/**
 	 * Inits the.
 	 */
@@ -74,10 +74,10 @@ public abstract class AbstractCassandraDAO {
 			LOGGER.info("Init with Cassandra ContactPoints:");
 		}
 		contactPoints = Arrays.asList(contactPointList.trim().split(","));
-		
+
 		if (contactPoints!=null) {
 			Cluster.Builder builder = Cluster.builder();
-			
+
 			for (String contactPoint:contactPoints) {
 				String contactPointTrimmed = contactPoint.trim();
 				if (!"".equals(contactPointTrimmed)) {
@@ -87,12 +87,21 @@ public abstract class AbstractCassandraDAO {
 					builder.addContactPoint(contactPoint.trim());
 				}
 			}
-			if (builder.getContactPoints().size()>0) {
-				this.cluster = builder.build();
-				this.session = cluster.connect(keyspace);
-			} else {
+			if (builder.getContactPoints().size()==0) {
 				throw new ConfigurationException("No valid contact point found in cassandra.properties. Please check configuration.");
 			}
+
+			if (authentication) {
+				if (username!=null && !"".equals(username)
+						&& password!=null && !"".equals(password)) {
+					builder.withCredentials(username, password);
+				} else {
+					throw new ConfigurationException("While authentication flag is set, no valid authentication username and password has been provided in cassandra.properties. Please check configuration.");
+				}
+			}
+
+			this.cluster = builder.build();
+			this.session = cluster.connect(keyspace);
 		}
 	}
 

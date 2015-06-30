@@ -8,7 +8,7 @@ A JAAS login module to implement authentication with Apache Cassandra
 1. [X] Username and password authentication based on an external cassandra datasource
 2. [X] Password is stored obscured with one-way hash SHA-256 function
 3. [X] External configuration point
-4. [ ] Optional authentication with cassandra database
+4. [X] Optional authentication with cassandra database
 5. [ ] Optional SSL communication between driver and database
 6. [X] User groups association on datasource
 7. [ ] API to manage users and groups (in progress...)

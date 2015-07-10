@@ -12,6 +12,7 @@ A JAAS login module to implement authentication with Apache Cassandra
 5. [X] Optional SSL communication between driver and database
 6. [X] User groups association on datasource
 7. [ ] API to manage users and groups (in progress...)
+8. [X] Customized connection retry at startup
  
 #Getting started
 
@@ -134,6 +135,12 @@ cassandra.properties layout example:
 	cassandra.truststorePassword=<truststore password here>
 	cassandra.keystorePath=${activemq.conf}/.keystore
 	cassandra.keystorePassword=<keystore password here>
+	cassandra.connectionTimeout=60000
+	cassandra.reconnectionBaseDelay=3000
+	cassandra.reconnectionMaxDelay=60000
+	cassandra.bootstrapReconnectionDelay=10000
+	cassandra.bootstrapReconnectionRetries=6
+	
 ```
 
 - cassandra.contactPoints: a comma separated list of contact points
@@ -146,7 +153,11 @@ cassandra.properties layout example:
 - cassandra.truststorePassword: the password of truststore
 - cassandra.keystorePath: path to .keystore file
 - cassandra.keystorePassword: the password of keystore
-
+- cassandra.connectionTimeout: the timeout during connection to nodes
+- cassandra.reconnectionBaseDelay: (Exponential Backoff) reconnection delay after the connected node goes down
+- cassandra.reconnectionMaxDelay: (Exponential Backoff) reconnection delay cap after the connected node goes down
+- cassandra.bootstrapReconnectionDelay: (Periodic retry) reconnection delay on jaas module startup. (-1 fails immediately if cannot find nodes)
+- cassandra.bootstrapReconnectionRetries: number of reconnection to retry before throwing exception
 
 ##Note - Enabling SSL client-to-node
 Please refer to official documentation at http://docs.datastax.com/en/cassandra/2.0/cassandra/security/secureSSLCertificates_t.html

@@ -42,6 +42,9 @@ import org.springframework.beans.factory.annotation.Value;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.SSLOptions;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.exceptions.NoHostAvailableException;
+import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
 
 /**
  * The Class AbstractCassandraDAO.
@@ -68,16 +71,16 @@ public abstract class AbstractCassandraDAO {
 
 	/** The use ssl. */
 	@Value("${cassandra.useSSL}") private Boolean useSSL;
-	
+
 	/** The truststore path. */
 	@Value("${cassandra.truststorePath}") private String truststorePath;
-	
+
 	/** The truststore password. */
 	@Value("${cassandra.truststorePassword}") private String truststorePassword;
-	
+
 	/** The keystore path. */
 	@Value("${cassandra.keystorePath}") private String keystorePath;
-	
+
 	/** The keystore password. */
 	@Value("${cassandra.keystorePassword}") private String keystorePassword;
 
@@ -90,6 +93,20 @@ public abstract class AbstractCassandraDAO {
 	/** The password. */
 	@Value("${cassandra.password}") private String password;
 
+	/** The connection timeout. */
+	@Value("${cassandra.connectionTimeout}") private Integer connectionTimeout;
+	
+	/** The reconnection base delay. */
+	@Value("${cassandra.reconnectionBaseDelay}") private Integer reconnectionBaseDelay;
+	
+	/** The reconnection max delay. */
+	@Value("${cassandra.reconnectionMaxDelay}") private Integer reconnectionMaxDelay;
+
+	/** The bootstrap reconnection delay. */
+	@Value("${cassandra.bootstrapReconnectionDelay}") private Integer bootstrapReconnectionDelay;
+
+	@Value("${cassandra.bootstrapReconnectionRetries}") private Integer bootstrapReconnectionRetries;
+			
 	/**
 	 * Inits the.
 	 */
@@ -132,20 +149,20 @@ public abstract class AbstractCassandraDAO {
 						throw new ConfigurationException("No valid truststore path found in cassandra.properties. Please check configuration.");
 					if (keystorePath==null || "".equals(keystorePath.trim()))
 						throw new ConfigurationException("No valid keystore path found in cassandra.properties. Please check configuration.");
-					
+
 					/* taken from http://www.datastax.com/dev/blog/accessing-secure-dse-clusters-with-cql-native-protocol */
 					SSLContext context = getSSLContext(
 							truststorePath, 
 							truststorePassword, 
 							keystorePath, 
 							keystorePassword);
-					
+
 					String[] cipherSuites = { 
 							"TLS_RSA_WITH_AES_128_CBC_SHA", 
 							"TLS_RSA_WITH_AES_256_CBC_SHA" 
-							};
+					};
 					builder.withSSL(new SSLOptions(context, cipherSuites));
-					
+
 				} catch (UnrecoverableKeyException | KeyManagementException
 						| NoSuchAlgorithmException | KeyStoreException
 						| CertificateException | IOException e) {
@@ -153,8 +170,57 @@ public abstract class AbstractCassandraDAO {
 				}
 
 			}
-			this.cluster = builder.build();
-			this.session = cluster.connect(keyspace);
+			
+			if (connectionTimeout==null) 
+				throw new ConfigurationException("No valid Connection Timeout has been provided in cassandra.properties. Please check configuration.");
+
+			if (reconnectionBaseDelay==null) 
+				throw new ConfigurationException("No valid Reconnection Base Delay has been provided in cassandra.properties. Please check configuration.");
+
+			if (reconnectionMaxDelay==null) 
+				throw new ConfigurationException("No valid Reconnection Max Delay has been provided in cassandra.properties. Please check configuration.");
+
+			if (bootstrapReconnectionDelay==null) 
+				throw new ConfigurationException("No valid Bootstrap Reconnection Delay has been provided in cassandra.properties. Please check configuration.");
+
+			if (bootstrapReconnectionRetries==null) 
+				throw new ConfigurationException("No valid Bootstrap Reconnection Retries has been provided in cassandra.properties. Please check configuration.");
+			
+			
+			SocketOptions options = new SocketOptions();
+			options.setConnectTimeoutMillis(connectionTimeout);
+			builder.withSocketOptions(options);
+			
+			builder.withReconnectionPolicy(new ExponentialReconnectionPolicy(reconnectionBaseDelay, reconnectionMaxDelay));
+			
+			Integer currentRetry = 0;
+			while (this.session == null) {
+				try {
+					currentRetry++;
+					this.cluster = builder.build();
+					this.session = cluster.connect(keyspace);
+				} catch (NoHostAvailableException e) {
+					try {
+						 if (bootstrapReconnectionDelay==-1)
+							throw e;
+						if (currentRetry >= bootstrapReconnectionRetries) {
+							if (LOGGER.isInfoEnabled()) {
+								LOGGER.info("Attempt #" + currentRetry + " (Final) - No cassandra hosts can be contacted.");
+							}
+							throw e;
+						}
+						else {
+							if (LOGGER.isInfoEnabled()) {
+								LOGGER.info("Attempt #" + currentRetry + " - No cassandra hosts can be contacted. Retrying in " + (bootstrapReconnectionDelay/1000) + " seconds...");
+							}
+						}
+						
+						Thread.sleep(bootstrapReconnectionDelay);
+					} catch (InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
 		}
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Cassandra connection successfully initialized");
@@ -191,7 +257,7 @@ public abstract class AbstractCassandraDAO {
 			String truststorePassword,
 			String keystorePath, 
 			String keystorePassword) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException
-					{
+	{
 		/* taken from http://www.datastax.com/dev/blog/accessing-secure-dse-clusters-with-cql-native-protocol */
 
 		FileInputStream tsf = new FileInputStream(truststorePath);

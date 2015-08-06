@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>cassandra-login-module by paolo-rendano</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">cassandra-login-module</h1>
+      <h2 class="project-tagline">A JAAS login module to implement authentication with cassandra database</h2>
+      <a href="https://github.com/paolo-rendano/cassandra-login-module" class="btn">View on GitHub</a>
+      <a href="https://github.com/paolo-rendano/cassandra-login-module/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/paolo-rendano/cassandra-login-module/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="cassandra-login-module" class="anchor" href="#cassandra-login-module" aria-hidden="true"><span class="octicon octicon-link"></span></a>cassandra-login-module</h1>
+
+<p>A JAAS login module to implement authentication with Apache Cassandra</p>
+
+<p><em>Perfectly fits with Apache ActiveMQ</em></p>
+
+<h1>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h1>
+
+<ol>
+<li>[X] Username and password authentication based on an external cassandra datasource</li>
+<li>[X] Password is stored obscured with one-way hash SHA-256 function</li>
+<li>[X] External configuration point</li>
+<li>[X] Optional authentication with cassandra database</li>
+<li>[X] Optional SSL communication between driver and database</li>
+<li>[X] User groups association on datasource</li>
+<li>[ ] API to manage users and groups (in progress...)</li>
+<li>[ ] Connection Pooling options</li>
+<li>[X] Customized connection retry at startup</li>
+</ol>
+
+<h1>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h1>
+
+<h2>
+<a id="compile-jar" class="anchor" href="#compile-jar" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compile Jar</h2>
+
+<p>Prerequisites: JDK 1.7 and Apache Maven 3.x properly installed</p>
+
+<ol>
+<li>download sources from git and explode them</li>
+<li>go in project home and type: mvn clean package</li>
+</ol>
+
+<h2>
+<a id="cassandra-keyspace-initialization" class="anchor" href="#cassandra-keyspace-initialization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cassandra keyspace initialization</h2>
+
+<p>Prerequisites: Apache Cassandra 2.1.x properly installed. Use cqlsh to input following commands.</p>
+
+<ul>
+<li>  create keyspace (according to your architectural decisions)</li>
+</ul>
+
+<pre><code>    CREATE KEYSPACE keyspace-name WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+</code></pre>
+
+<ul>
+<li>  create users table </li>
+</ul>
+
+<pre><code>    USE keyspace-name;
+</code></pre>
+
+<pre><code>    CREATE TABLE users (
+       uname varchar,
+       fname varchar,
+       lname varchar,
+       pwd varchar
+    PRIMARY KEY (uname));
+</code></pre>
+
+<ul>
+<li>  create groups table</li>
+</ul>
+
+<pre><code>    CREATE TABLE groups (
+        uname varchar,
+        gname varchar,
+    PRIMARY KEY(uname, gname));
+</code></pre>
+
+<ul>
+<li>  insert example user (user: dduck password: password)</li>
+</ul>
+
+<pre><code>    INSERT INTO users (uname, fname, lname, pwd) VALUES ( 'dduck', 'Donald', 'Duck', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
+</code></pre>
+
+<ul>
+<li>  insert example group (user: dduck group: ducks)</li>
+</ul>
+
+<pre><code>    INSERT INTO groups (uname, gname) VALUES ( 'dduck', 'ducks');
+</code></pre>
+
+<h3>
+<a id="note" class="anchor" href="#note" aria-hidden="true"><span class="octicon octicon-link"></span></a>Note</h3>
+
+<p>You can easily hash password with java function:</p>
+
+<pre><code>    String password = "password";
+    MessageDigest mdigest = MessageDigest.getInstance("SHA-256");
+    mdigest.update(password.getBytes("UTF-8"));
+    String hashed = Base64.encodeBase64String(mdigest.digest());
+</code></pre>
+
+<h2>
+<a id="example-1---install-in-activemq" class="anchor" href="#example-1---install-in-activemq" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 1 - Install in ActiveMQ</h2>
+
+<ul>
+<li>  put artifact jar (cassandra-login-module-x.y.z.jar) into $ACTIVEMQ_HOME/lib</li>
+<li>
+<p>put external dependencies into $ACTIVEMQ_HOME/lib:</p>
+
+<ul>
+<li>cassandra-driver-core-2.1.x-shaded.jar</li>
+<li>guava-14.0.1.jar</li>
+<li>metrics-core-3.0.2.jar</li>
+<li>hawtbuf-1.11.jar</li>
+<li>slf4j-api-1.7.10.jar</li>
+</ul>
+</li>
+<li><p>add following block into $ACTIVEMQ_HOME/conf/login.config</p></li>
+</ul>
+
+<pre><code>    activemq-cassandra {
+            it.paolorendano.cml.CassandraLoginModule required;
+    };
+</code></pre>
+
+<ul>
+<li>  merge following block within $ACTIVEMQ_HOME/conf/activemq.xml</li>
+</ul>
+
+<pre><code>    &lt;bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"&gt;
+        &lt;property name="locations"&gt;
+            &lt;list&gt;
+                ...
+                &lt;value&gt;file:${activemq.conf}/cassandra.properties&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;import resource="classpath*:/cassandra-jaas-config.xml" /&gt;
+
+    &lt;broker&gt;
+        &lt;plugins&gt;
+            &lt;jaasAuthenticationPlugin configuration="activemq-cassandra" /&gt;
+        &lt;/plugins&gt;
+    &lt;/broker&gt;
+
+</code></pre>
+
+<ul>
+<li>  create and properly configure $ACTIVEMQ_HOME/conf/cassandra.properties</li>
+</ul>
+
+<p>cassandra.properties layout example:</p>
+
+<pre><code>    cassandra.contactPoints=ec2-x-y-z-w.eu-central-1.compute.amazonaws.com, ec2-x-y-z-w.eu-central-2.compute.amazonaws.com
+    cassandra.keyspace=keyspace-name
+    cassandra.authentication=true
+    cassandra.username=cassandra
+    cassandra.password=cassandra
+    cassandra.useSSL=true
+    cassandra.truststorePath=${activemq.conf}/.truststore
+    cassandra.truststorePassword=&lt;truststore password here&gt;
+    cassandra.keystorePath=${activemq.conf}/.keystore
+    cassandra.keystorePassword=&lt;keystore password here&gt;
+    cassandra.connectionTimeout=60000
+    cassandra.reconnectionBaseDelay=3000
+    cassandra.reconnectionMaxDelay=60000
+    cassandra.bootstrapReconnectionDelay=10000
+    cassandra.bootstrapReconnectionRetries=6
+
+</code></pre>
+
+<ul>
+<li>cassandra.contactPoints: a comma separated list of contact points</li>
+<li>cassandra.keyspace: the name of the keyspace to connect to</li>
+<li>cassandra.authentication: true if cassandra requires username/password authentication</li>
+<li>cassandra.username: username to authentication against cassandra</li>
+<li>cassandra.password: password to authentication against cassandra</li>
+<li>cassandra.useSSL: true if cassandra requires client-to-node ssl encryption</li>
+<li>cassandra.truststorePath: path to .truststore file</li>
+<li>cassandra.truststorePassword: the password of truststore</li>
+<li>cassandra.keystorePath: path to .keystore file</li>
+<li>cassandra.keystorePassword: the password of keystore</li>
+<li>cassandra.connectionTimeout: the timeout during connection to nodes</li>
+<li>cassandra.reconnectionBaseDelay: (Exponential Backoff) reconnection delay after the connected node goes down</li>
+<li>cassandra.reconnectionMaxDelay: (Exponential Backoff) reconnection delay cap after the connected node goes down</li>
+<li>cassandra.bootstrapReconnectionDelay: (Periodic retry) reconnection delay on jaas module startup. (-1 fails immediately if cannot find nodes)</li>
+<li>cassandra.bootstrapReconnectionRetries: number of reconnection to retry before throwing exception</li>
+</ul>
+
+<h2>
+<a id="note---enabling-ssl-client-to-node" class="anchor" href="#note---enabling-ssl-client-to-node" aria-hidden="true"><span class="octicon octicon-link"></span></a>Note - Enabling SSL client-to-node</h2>
+
+<p>Please refer to official documentation at <a href="http://docs.datastax.com/en/cassandra/2.0/cassandra/security/secureSSLCertificates_t.html">http://docs.datastax.com/en/cassandra/2.0/cassandra/security/secureSSLCertificates_t.html</a></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/paolo-rendano/cassandra-login-module">cassandra-login-module</a> is maintained by <a href="https://github.com/paolo-rendano">paolo-rendano</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>

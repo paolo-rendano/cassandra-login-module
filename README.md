@@ -95,7 +95,7 @@ You can easily hash password with java function:
 
 ```
 	activemq-cassandra {
-    		it.paolorendano.cml.CassandraLoginModule required;
+    		it.paolorendano.clm.CassandraLoginModule required;
 	};
 ```
 

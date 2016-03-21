@@ -17,7 +17,7 @@
 		<spring-version>4.1.1.RELEASE</spring-version>
 		<spring-integration-version>4.1.0.RELEASE</spring-integration-version>
 		<activemq-version>5.11.0</activemq-version>
-		<cassandra-driver-version>2.1.6</cassandra-driver-version>
+		<cassandra-driver-version>3.0.0</cassandra-driver-version>
 	</properties>
 
 	<build>
